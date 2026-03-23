@@ -19,8 +19,8 @@ export function GoalItem({ initialGoal, onDeleted }: { initialGoal: any, onDelet
     }
     setIsPending(true);
     try {
-      const updated = await updateGoalTitle(goal.id, editTitle);
-      setGoal({ ...goal, title: updated.title });
+      await updateGoalTitle(goal.id, editTitle);
+      setGoal({ ...goal, title: editTitle });
       setIsEditing(false);
     } catch (e) {
       console.error(e);
