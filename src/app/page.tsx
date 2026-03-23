@@ -35,19 +35,13 @@ export default async function Home() {
   return (
     <div className="page-wrapper">
       <header className={styles.header}>
-        <div className="container" style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <h1>Noodle</h1>
-            <p>&quot;All sectors of knowledge are connected together, and they form a single chain.&quot; — Roger Bacon</p>
-          </div>
-          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-            {session?.user && <AddGoalForm />}
-            <LoginButton />
-          </div>
+        <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h1>Noodle</h1>
+          <LoginButton />
         </div>
       </header>
 
-      <main style={{ width: '100%', height: 'calc(100vh - 120px)' }}>
+      <main style={{ width: '100%', height: 'calc(100vh - 64px)', position: 'relative' }}>
         <MindMapCanvas
           goals={goals}
           resources={resources}
@@ -56,6 +50,7 @@ export default async function Home() {
           goalConnections={goalConnections}
           stepConnections={stepConnections}
         />
+        {session?.user && <AddGoalForm />}
       </main>
     </div>
   );
