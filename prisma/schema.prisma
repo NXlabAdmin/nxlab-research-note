@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------------------------------------------------------------
+// NextAuth Models
+// ----------------------------------------------------------------------------
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+
+  // App relations
+  goals     Goal[]
+  resources Resource[]
+  schedules Schedule[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ----------------------------------------------------------------------------
+// NXlab Research Note App Models (Goal, Step, Resource, Schedule)
+// ----------------------------------------------------------------------------
+
+model Goal {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  progress  Int      @default(0) // 0-100 percentage
+  color     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  steps     Step[]
+  resources Resource[]
+
+  sourceConnections GoalConnection[] @relation("sourceConnection")
+  targetConnections GoalConnection[] @relation("targetConnection")
+  stepConnections   StepConnection[]
+}
+
+model GoalConnection {
+  id       String @id @default(cuid())
+  sourceId String
+  targetId String
+
+  source Goal @relation("sourceConnection", fields: [sourceId], references: [id], onDelete: Cascade)
+  target Goal @relation("targetConnection", fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceId, targetId])
+}
+
+model Step {
+  id           String   @id @default(cuid())
+  goalId       String
+  parentStepId String?
+  title        String
+  isCompleted  Boolean  @default(false)
+  order        Int      @default(0)
+  color        String?
+  createdAt    DateTime @default(now())
+
+  goal        Goal     @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  parentStep  Step?    @relation("SubSteps", fields: [parentStepId], references: [id], onDelete: Cascade)
+  subSteps    Step[]   @relation("SubSteps")
+  resources   Resource[]
+  stepConnections StepConnection[]
+}
+
+model StepConnection {
+  id     String @id @default(cuid())
+  stepId String
+  goalId String
+
+  step Step @relation(fields: [stepId], references: [id], onDelete: Cascade)
+  goal Goal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+
+  @@unique([stepId, goalId])
+}
+
+model Resource {
+  id        String   @id @default(cuid())
+  userId    String
+  goalId    String?
+  stepId    String?
+  title     String
+  url       String?
+  memo      String?
+  color     String?
+  createdAt DateTime @default(now())
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal Goal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  step Step? @relation(fields: [stepId], references: [id], onDelete: SetNull)
+}
+
+model Schedule {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  date        DateTime
+  description String?
+  color       String?
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
