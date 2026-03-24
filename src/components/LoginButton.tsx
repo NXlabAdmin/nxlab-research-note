@@ -412,16 +412,40 @@ export function LoginButton() {
                   '허브 노드(중앙)를 클릭해 프로젝트 이름을 변경할 수 있습니다.',
                   '이름 버튼 → 내보내기로 현재 구조를 .md 또는 .json으로 다운로드합니다.',
                   '다운로드한 파일을 AI에게 첨부하면 전체 맥락을 공유할 수 있습니다.',
+                  'AI가 수정·보완한 파일을 받으면 이름 버튼 → 가져오기로 업로드해 캔버스에 반영합니다.',
                 ].map((text, i) => (
                   <li key={i} style={{ fontSize: '0.875rem', lineHeight: 1.65, color: '#cbd5e1' }}>{text}</li>
                 ))}
               </ol>
             </section>
 
-            <section>
-              <h3 style={{ color: '#60a5fa', fontSize: '0.95rem', marginBottom: 8 }}>AI에게 파일을 줄 때 추천 프롬프트</h3>
-              <div style={{ background: '#0f172a', borderRadius: 8, padding: '12px 14px', fontSize: '0.82rem', color: '#94a3b8', lineHeight: 1.7, fontFamily: 'monospace' }}>
-                "첨부 파일은 내 연구 구조입니다. 이 맥락을 바탕으로 [질문]을 도와주세요."
+            <section style={{ marginBottom: 24 }}>
+              <h3 style={{ color: '#60a5fa', fontSize: '0.95rem', marginBottom: 8 }}>AI와 함께 구조 발전시키기</h3>
+              <p style={{ fontSize: '0.85rem', lineHeight: 1.7, color: '#cbd5e1', margin: '0 0 12px' }}>
+                내보내기 → AI 대화 → 가져오기 순서로 캔버스를 계속 발전시킬 수 있습니다.
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {[
+                  {
+                    label: '맥락 공유',
+                    prompt: '"첨부 파일은 내 연구 구조입니다. 이 맥락을 바탕으로 [질문]을 도와주세요."',
+                  },
+                  {
+                    label: '구조 추가 요청',
+                    prompt: '"첨부된 JSON에 [새 Goal/Step]을 추가해서 동일한 JSON 형식으로 반환해줘."',
+                  },
+                  {
+                    label: '빠진 연결 찾기',
+                    prompt: '"이 구조에서 놓친 연결이나 보완할 단계가 있으면 JSON에 추가해서 돌려줘."',
+                  },
+                ].map(item => (
+                  <div key={item.label}>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: 3 }}>{item.label}</div>
+                    <div style={{ background: '#0f172a', borderRadius: 6, padding: '10px 12px', fontSize: '0.82rem', color: '#94a3b8', lineHeight: 1.6, fontFamily: 'monospace' }}>
+                      {item.prompt}
+                    </div>
+                  </div>
+                ))}
               </div>
             </section>
 
