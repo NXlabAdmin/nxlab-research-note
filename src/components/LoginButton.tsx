@@ -314,7 +314,7 @@ export function LoginButton() {
               }}
             >✕</button>
 
-            <h2 style={{ margin: '0 0 4px', fontSize: '1.4rem', color: '#f8fafc' }}>NXLab Research Note</h2>
+            <h2 style={{ margin: '0 0 4px', fontSize: '1.4rem', color: '#f8fafc' }}>Noodle</h2>
             <p style={{ margin: '0 0 24px', color: '#64748b', fontSize: '0.85rem' }}>생각의 구조를 시각화하는 AI 연동 마인드맵</p>
 
             <section style={{ marginBottom: 24 }}>
