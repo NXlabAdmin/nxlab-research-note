@@ -86,6 +86,17 @@ export async function toggleStepCompletion(stepId: string, isCompleted: boolean)
   return updated;
 }
 
+export async function updateStepDueDate(stepId: string, dueDate: string | null) {
+  const step = await prisma.step.findUnique({ where: { id: stepId } });
+  if (!step) throw new Error("Step not found");
+  await verifyGoalOwnership(step.goalId);
+  await prisma.step.update({
+    where: { id: stepId },
+    data: { dueDate: dueDate ? new Date(dueDate) : null },
+  });
+  revalidatePath("/");
+}
+
 export async function deleteStep(stepId: string) {
   const step = await prisma.step.findUnique({ where: { id: stepId } });
   if (!step) throw new Error("Step not found");

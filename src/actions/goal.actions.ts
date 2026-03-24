@@ -52,6 +52,15 @@ export async function deleteGoal(id: string) {
   revalidatePath("/");
 }
 
+export async function updateGoalDueDate(id: string, dueDate: string | null) {
+  const userId = await getUserId();
+  await prisma.goal.updateMany({
+    where: { id, userId },
+    data: { dueDate: dueDate ? new Date(dueDate) : null },
+  });
+  revalidatePath("/");
+}
+
 export async function completeGoal(id: string) {
   const userId = await getUserId();
   await prisma.goal.updateMany({

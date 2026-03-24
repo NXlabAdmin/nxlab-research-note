@@ -15,10 +15,16 @@ const btnStyle = (bg: string): React.CSSProperties => ({
 
 export function SidePanel({ selectedNode, onClose, onHubRename }: SidePanelProps) {
   const [hubInput, setHubInput] = useState('');
+  const [dueInput, setDueInput] = useState('');
 
   useEffect(() => {
     if (selectedNode?.id === 'hub-main') {
       setHubInput(selectedNode.data.label ?? 'NXLab');
+    }
+    const raw = selectedNode?.data?.rawData;
+    if (raw) {
+      const due = raw.dueDate ? new Date(raw.dueDate) : new Date(raw.createdAt);
+      setDueInput(due.toISOString().slice(0, 10));
     }
   }, [selectedNode]);
 
@@ -113,6 +119,28 @@ export function SidePanel({ selectedNode, onClose, onHubRename }: SidePanelProps
           <>
             <div><strong>Progress:</strong> {data.progress}%</div>
             <div><strong>Created:</strong> {new Date(raw.createdAt).toLocaleDateString()}</div>
+            <div>
+              <div style={{ color: '#94a3b8', fontSize: '12px', marginBottom: 4 }}>목표 완료일</div>
+              <div style={{ display: 'flex', gap: 6 }}>
+                <input
+                  type="date"
+                  value={dueInput}
+                  onChange={e => setDueInput(e.target.value)}
+                  style={{
+                    flex: 1, background: '#0f172a', border: '1px solid #334155',
+                    borderRadius: 6, padding: '6px 8px', color: '#f8fafc',
+                    fontSize: '0.875rem', outline: 'none',
+                  }}
+                />
+                <button
+                  onClick={async () => {
+                    const { updateGoalDueDate } = await import('@/actions/goal.actions');
+                    await updateGoalDueDate(raw.id, dueInput || null);
+                  }}
+                  style={btnStyle('#3b82f6')}
+                >저장</button>
+              </div>
+            </div>
             <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
               <button onClick={async () => {
                 const title = prompt('새로운 스텝 이름을 입력하세요:');
@@ -154,6 +182,28 @@ export function SidePanel({ selectedNode, onClose, onHubRename }: SidePanelProps
             <div><strong>Status:</strong> {raw.isCompleted ? '✅ Completed' : '⏳ Pending'}</div>
             <div><strong>Created:</strong> {new Date(raw.createdAt).toLocaleDateString()}</div>
             {raw.parentStepId && <div style={{ color: '#94a3b8', fontSize: '12px' }}>서브스텝</div>}
+            <div>
+              <div style={{ color: '#94a3b8', fontSize: '12px', marginBottom: 4 }}>목표 완료일</div>
+              <div style={{ display: 'flex', gap: 6 }}>
+                <input
+                  type="date"
+                  value={dueInput}
+                  onChange={e => setDueInput(e.target.value)}
+                  style={{
+                    flex: 1, background: '#0f172a', border: '1px solid #334155',
+                    borderRadius: 6, padding: '6px 8px', color: '#f8fafc',
+                    fontSize: '0.875rem', outline: 'none',
+                  }}
+                />
+                <button
+                  onClick={async () => {
+                    const { updateStepDueDate } = await import('@/actions/step.actions');
+                    await updateStepDueDate(raw.id, dueInput || null);
+                  }}
+                  style={btnStyle('#3b82f6')}
+                >저장</button>
+              </div>
+            </div>
 
             <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
               <button onClick={async () => {
