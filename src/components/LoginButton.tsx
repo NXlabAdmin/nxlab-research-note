@@ -3,6 +3,7 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useState, useRef, useEffect } from "react";
 import { exportAllData } from "@/actions/export.actions";
+import { importFromJson, importFromMarkdown } from "@/actions/import.actions";
 
 function buildMarkdown(data: Awaited<ReturnType<typeof exportAllData>>): string {
   const { goals, steps, resources, schedules, goalConnections, stepConnections, nodeConnections } = data;
@@ -99,7 +100,34 @@ export function LoginButton() {
   }, []);
 
   const [exporting, setExporting] = useState(false);
+  const [importing, setImporting] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImporting(true);
+    try {
+      const text = await file.text();
+      if (file.name.endsWith('.json')) {
+        await importFromJson(text);
+      } else if (file.name.endsWith('.md')) {
+        await importFromMarkdown(text);
+      } else {
+        alert('.json 또는 .md 파일만 지원합니다.');
+        return;
+      }
+      alert('가져오기가 완료됐습니다. 페이지를 새로고침합니다.');
+      window.location.reload();
+    } catch (err) {
+      console.error(err);
+      alert('가져오기 중 오류가 발생했습니다.');
+    } finally {
+      setImporting(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
 
   if (status === "loading") return null;
 
@@ -214,6 +242,33 @@ export function LoginButton() {
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
           >
             사용방법
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json,.md"
+            style={{ display: 'none' }}
+            onChange={handleImport}
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={importing}
+            style={{
+              width: '100%', textAlign: 'left',
+              padding: '8px 10px',
+              borderRadius: 6,
+              color: '#34d399',
+              fontSize: '0.9rem',
+              background: 'none',
+              border: 'none',
+              cursor: importing ? 'wait' : 'pointer',
+              borderBottom: '1px solid #334155',
+              marginBottom: 4,
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#0f172a')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+          >
+            {importing ? '가져오는 중...' : '가져오기'}
           </button>
           <div style={{ padding: '4px 10px 2px', color: '#64748b', fontSize: '0.72rem', marginTop: 2 }}>
             내보내기
