@@ -45,15 +45,6 @@ export const BaseNode: FC<BaseNodeProps> = ({ data, size = 60, color = '#3b82f6'
       }}>
         {data.label}
       </div>
-      {data.rawData?.dueDate && (
-        <div style={{
-          fontSize: '0.55rem', marginTop: 3,
-          color: 'rgba(255,255,255,0.7)',
-          letterSpacing: '0.02em',
-        }}>
-          {new Date(data.rawData.dueDate).toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' }).replace('. ', '/').replace('.', '')}
-        </div>
-      )}
       <Handle type="source" position={Position.Bottom} style={{ background: '#fff', width: 8, height: 8, border: 'none' }} />
       <Handle type="target" position={Position.Right} style={{ background: '#fff', width: 8, height: 8, border: 'none' }} />
     </div>
