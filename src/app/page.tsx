@@ -1,34 +1,18 @@
-import styles from "./page.module.css";
 import { LoginButton } from "@/components/LoginButton";
 import { AddGoalForm } from "@/components/AddGoalForm";
-import { MindMapCanvas } from "@/components/canvas/MindMapCanvas";
+import { ARSceneWrapper } from "@/components/ar/ARSceneWrapper";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getGoals } from "@/actions/goal.actions";
-import { getResources } from "@/actions/resource.actions";
-import { getSchedules } from "@/actions/schedule.actions";
-import { prisma } from "@/lib/prisma";
+import styles from "./page.module.css";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
   let goals: any[] = [];
-  let resources: any[] = [];
-  let schedules: any[] = [];
-  let steps: any[] = [];
-  let goalConnections: any[] = [];
-  let stepConnections: any[] = [];
-  let nodeConnections: any[] = [];
 
   if (session?.user) {
-    const userId = (session.user as any).id;
     try {
       goals = await getGoals();
-      resources = await getResources();
-      schedules = await getSchedules();
-      steps = await prisma.step.findMany({ where: { goal: { userId } } });
-      goalConnections = await (prisma as any).goalConnection.findMany({ where: { source: { userId } } });
-      stepConnections = await (prisma as any).stepConnection.findMany({ where: { step: { goal: { userId } } } });
-      nodeConnections = await (prisma as any).nodeConnection.findMany({ where: { userId } });
     } catch (e) {
       console.error(e);
     }
@@ -38,22 +22,26 @@ export default async function Home() {
     <div className="page-wrapper">
       <header className={styles.header}>
         <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h1>Noodle</h1>
+          <h1>Noodle AR</h1>
           <LoginButton />
         </div>
       </header>
 
       <main style={{ width: '100%', height: 'calc(100vh - 64px)', position: 'relative' }}>
-        <MindMapCanvas
-          goals={goals}
-          resources={resources}
-          schedules={schedules}
-          steps={steps}
-          goalConnections={goalConnections}
-          stepConnections={stepConnections}
-          nodeConnections={nodeConnections}
-        />
-        {session?.user && <AddGoalForm />}
+        {session?.user ? (
+          <>
+            <ARSceneWrapper goals={goals} />
+            <AddGoalForm />
+          </>
+        ) : (
+          <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            justifyContent: 'center', height: '100%', gap: 16, color: '#94a3b8',
+          }}>
+            <div style={{ fontSize: 48, color: '#a78bfa' }}>◈</div>
+            <p style={{ fontSize: 16 }}>로그인하고 AR 마인드맵을 시작하세요</p>
+          </div>
+        )}
       </main>
     </div>
   );
