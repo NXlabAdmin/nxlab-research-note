@@ -35,6 +35,7 @@ export const BaseNode: FC<BaseNodeProps> = ({ data, size = 60, color = '#3b82f6'
       title={data.label}
     >
       <Handle type="target" position={Position.Top} style={{ background: '#fff', width: 8, height: 8, border: 'none' }} />
+      <Handle type="source" position={Position.Left} style={{ background: '#fff', width: 8, height: 8, border: 'none' }} />
       <div style={{
           overflow: 'hidden',
           textOverflow: 'ellipsis',
@@ -45,6 +46,7 @@ export const BaseNode: FC<BaseNodeProps> = ({ data, size = 60, color = '#3b82f6'
         {data.label}
       </div>
       <Handle type="source" position={Position.Bottom} style={{ background: '#fff', width: 8, height: 8, border: 'none' }} />
+      <Handle type="target" position={Position.Right} style={{ background: '#fff', width: 8, height: 8, border: 'none' }} />
     </div>
   );
 };

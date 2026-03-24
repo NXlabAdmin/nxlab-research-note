@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -47,9 +47,10 @@ model User {
   sessions      Session[]
 
   // App relations
-  goals     Goal[]
-  resources Resource[]
-  schedules Schedule[]
+  goals           Goal[]
+  resources       Resource[]
+  schedules       Schedule[]
+  nodeConnections NodeConnection[]
 }
 
 model VerificationToken {
@@ -135,6 +136,19 @@ model Resource {
   user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   goal Goal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
   step Step? @relation(fields: [stepId], references: [id], onDelete: SetNull)
+}
+
+model NodeConnection {
+  id             String @id @default(cuid())
+  userId         String
+  sourceNodeId   String
+  sourceNodeType String
+  targetNodeId   String
+  targetNodeType String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceNodeId, targetNodeId])
 }
 
 model Schedule {

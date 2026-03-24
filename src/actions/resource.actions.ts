@@ -61,3 +61,12 @@ export async function deleteResource(id: string) {
   });
   revalidatePath("/");
 }
+
+export async function unlinkResource(id: string) {
+  const userId = await getUserId();
+  await prisma.resource.update({
+    where: { id, userId },
+    data: { goalId: null, stepId: null },
+  });
+  revalidatePath("/");
+}

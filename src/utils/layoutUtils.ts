@@ -10,7 +10,9 @@ export function generateConstellationLayout(
   schedules: any[],
   steps: any[],
   goalConnections: any[] = [],
-  stepConnections: any[] = []
+  stepConnections: any[] = [],
+  nodeConnections: any[] = [],
+  hubName: string = 'NXLab'
 ): { nodes: Node[]; edges: Edge[] } {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
@@ -23,6 +25,17 @@ export function generateConstellationLayout(
       target: `goal-${conn.targetId}`,
       type: 'straight',
       style: { stroke: '#fbbf24', strokeWidth: 2 }
+    });
+  });
+
+  // Generic node connections (teal)
+  nodeConnections.forEach(conn => {
+    edges.push({
+      id: `nodeconn-${conn.id}`,
+      source: `${conn.sourceNodeType}-${conn.sourceNodeId}`,
+      target: `${conn.targetNodeType}-${conn.targetNodeId}`,
+      type: 'straight',
+      style: { stroke: '#22d3ee', strokeWidth: 2, strokeDasharray: '5 3' }
     });
   });
 
@@ -42,7 +55,7 @@ export function generateConstellationLayout(
     id: 'hub-main',
     type: 'goalNode',
     position: { x: 0, y: 0 },
-    data: { label: 'NXLab Research', progress: 100, rawData: { createdAt: new Date() } },
+    data: { label: hubName, progress: 100, rawData: { createdAt: new Date() } },
   });
 
   const HUB_RADIUS = goals.length > 5 ? 800 + (goals.length * 50) : 600;
@@ -62,14 +75,6 @@ export function generateConstellationLayout(
       type: 'goalNode',
       position: { x: goalX, y: goalY },
       data: { label: goal.title, progress: goal.progress, rawData: goal },
-    });
-
-    edges.push({
-      id: `e-hub-goal-${goal.id}`,
-      source: 'hub-main',
-      target: `goal-${goal.id}`,
-      type: 'straight',
-      style: { stroke: 'rgba(255, 255, 255, 0.4)', strokeWidth: 2 },
     });
 
     // Direct children: top-level steps + goal-linked resources

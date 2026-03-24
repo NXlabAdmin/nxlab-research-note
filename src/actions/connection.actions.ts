@@ -100,3 +100,28 @@ export async function getStepConnections() {
     where: { step: { goal: { userId } } }
   });
 }
+
+export async function createNodeConnection(
+  sourceNodeId: string, sourceNodeType: string,
+  targetNodeId: string, targetNodeType: string
+) {
+  const userId = await getUserId();
+  const conn = await (prisma as any).nodeConnection.create({
+    data: { userId, sourceNodeId, sourceNodeType, targetNodeId, targetNodeType }
+  });
+  revalidatePath("/");
+  return conn;
+}
+
+export async function deleteNodeConnection(id: string) {
+  const userId = await getUserId();
+  const conn = await (prisma as any).nodeConnection.findUnique({ where: { id } });
+  if (!conn || conn.userId !== userId) throw new Error("Unauthorized");
+  await (prisma as any).nodeConnection.delete({ where: { id } });
+  revalidatePath("/");
+}
+
+export async function getNodeConnections() {
+  const userId = await getUserId();
+  return (prisma as any).nodeConnection.findMany({ where: { userId } });
+}

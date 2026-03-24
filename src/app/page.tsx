@@ -17,6 +17,7 @@ export default async function Home() {
   let steps: any[] = [];
   let goalConnections: any[] = [];
   let stepConnections: any[] = [];
+  let nodeConnections: any[] = [];
 
   if (session?.user) {
     const userId = (session.user as any).id;
@@ -27,6 +28,7 @@ export default async function Home() {
       steps = await prisma.step.findMany({ where: { goal: { userId } } });
       goalConnections = await (prisma as any).goalConnection.findMany({ where: { source: { userId } } });
       stepConnections = await (prisma as any).stepConnection.findMany({ where: { step: { goal: { userId } } } });
+      nodeConnections = await (prisma as any).nodeConnection.findMany({ where: { userId } });
     } catch (e) {
       console.error(e);
     }
@@ -49,6 +51,7 @@ export default async function Home() {
           steps={steps}
           goalConnections={goalConnections}
           stepConnections={stepConnections}
+          nodeConnections={nodeConnections}
         />
         {session?.user && <AddGoalForm />}
       </main>

@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface SidePanelProps {
   selectedNode: any;
   onClose: () => void;
+  onHubRename?: (name: string) => void;
 }
 
 const btnStyle = (bg: string): React.CSSProperties => ({
@@ -12,11 +13,20 @@ const btnStyle = (bg: string): React.CSSProperties => ({
   border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px'
 });
 
-export function SidePanel({ selectedNode, onClose }: SidePanelProps) {
+export function SidePanel({ selectedNode, onClose, onHubRename }: SidePanelProps) {
+  const [hubInput, setHubInput] = useState('');
+
+  useEffect(() => {
+    if (selectedNode?.id === 'hub-main') {
+      setHubInput(selectedNode.data.label ?? 'NXLab');
+    }
+  }, [selectedNode]);
+
   if (!selectedNode) return null;
 
   const { data, type } = selectedNode;
   const raw = data.rawData;
+  const isHub = selectedNode.id === 'hub-main';
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#a78bfa', '#0f172a'];
 
   return (
@@ -43,7 +53,44 @@ export function SidePanel({ selectedNode, onClose }: SidePanelProps) {
 
       <h2 style={{ fontSize: '1.5rem', marginBottom: 8, borderBottom: '1px solid #334155', paddingBottom: 12 }}>{data.label}</h2>
 
-      <div style={{ marginBottom: 16, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+      {isHub && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <label style={{ color: '#94a3b8', fontSize: '12px' }}>허브 이름</label>
+          <input
+            value={hubInput}
+            onChange={e => setHubInput(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') { onHubRename?.(hubInput); onClose(); }
+            }}
+            style={{
+              background: '#0f172a',
+              border: '1px solid #334155',
+              borderRadius: 6,
+              padding: '8px 10px',
+              color: '#f8fafc',
+              fontSize: '0.95rem',
+              outline: 'none',
+            }}
+          />
+          <button
+            onClick={() => { onHubRename?.(hubInput); onClose(); }}
+            style={{
+              background: '#3b82f6',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 6,
+              padding: '8px',
+              cursor: 'pointer',
+              fontSize: '13px',
+              fontWeight: 600,
+            }}
+          >
+            저장
+          </button>
+        </div>
+      )}
+
+      {raw?.id && <div style={{ marginBottom: 16, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
         {COLORS.map(c => (
           <button
             key={c}
@@ -59,9 +106,9 @@ export function SidePanel({ selectedNode, onClose }: SidePanelProps) {
             }}
           />
         ))}
-      </div>
+      </div>}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      {raw?.id && <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {type === 'goalNode' && (
           <>
             <div><strong>Progress:</strong> {data.progress}%</div>
@@ -169,7 +216,7 @@ export function SidePanel({ selectedNode, onClose }: SidePanelProps) {
             {raw.description && <div><strong>Desc:</strong> <p style={{ background: '#0f172a', padding: 8, borderRadius: 4, marginTop: 4 }}>{raw.description}</p></div>}
           </>
         )}
-      </div>
+      </div>}
     </div>
   );
 }

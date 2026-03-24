@@ -46,10 +46,13 @@ export function AddGoalForm() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          padding: 0,
         }}
         title="새 연구 목표 추가"
       >
-        +
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 5v14m-7-7h14" />
+        </svg>
       </button>
 
       {/* 모달 오버레이 */}

@@ -97,3 +97,17 @@ export async function deleteStep(stepId: string) {
   await updateGoalProgress(step.goalId);
   revalidatePath("/");
 }
+
+export async function unlinkSubStep(stepId: string) {
+  const step = await prisma.step.findUnique({ where: { id: stepId } });
+  if (!step || !step.parentStepId) throw new Error("Step not found or not a sub-step");
+
+  await verifyGoalOwnership(step.goalId);
+
+  await prisma.step.update({
+    where: { id: stepId },
+    data: { parentStepId: null },
+  });
+
+  revalidatePath("/");
+}
