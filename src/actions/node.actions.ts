@@ -20,7 +20,10 @@ export async function updateNodeColor(type: string, id: string, color: string) {
   if (type === 'goalNode' || type === 'Goal') {
     await prisma.goal.updateMany({ where: { id, userId }, data: { color } });
   } else if (type === 'stepNode' || type === 'Step') {
-    // Note: step doesn't strictly check user ownership directly in Prisma schema, so we should join, but for simplicity we rely on the app logic 
+    const step = await prisma.step.findUnique({ where: { id } });
+    if (!step) return;
+    const goal = await prisma.goal.findUnique({ where: { id: step.goalId, userId } });
+    if (!goal) return;
     await prisma.step.update({ where: { id }, data: { color } });
   } else if (type === 'resourceNode' || type === 'Resource') {
     await prisma.resource.updateMany({ where: { id, userId }, data: { color } });

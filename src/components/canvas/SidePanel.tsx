@@ -23,8 +23,7 @@ export function SidePanel({ selectedNode, onClose, onHubRename }: SidePanelProps
     }
     const raw = selectedNode?.data?.rawData;
     if (raw) {
-      const due = raw.dueDate ? new Date(raw.dueDate) : new Date(raw.createdAt);
-      setDueInput(due.toISOString().slice(0, 10));
+      setDueInput(raw.dueDate ? new Date(raw.dueDate).toISOString().slice(0, 10) : '');
     }
   }, [selectedNode]);
 
@@ -183,7 +182,7 @@ export function SidePanel({ selectedNode, onClose, onHubRename }: SidePanelProps
             <div><strong>Created:</strong> {new Date(raw.createdAt).toLocaleDateString()}</div>
             {raw.parentStepId && <div style={{ color: '#94a3b8', fontSize: '12px' }}>서브스텝</div>}
             <div>
-              <div style={{ color: '#94a3b8', fontSize: '12px', marginBottom: 4 }}>목표 완료일</div>
+              <div style={{ color: '#94a3b8', fontSize: '12px', marginBottom: 4 }}>스텝 완료일</div>
               <div style={{ display: 'flex', gap: 6 }}>
                 <input
                   type="date"

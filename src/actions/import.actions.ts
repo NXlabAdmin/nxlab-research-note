@@ -21,7 +21,12 @@ async function getUserId() {
 // ──────────────────────────────────────────────
 export async function importFromJson(jsonString: string) {
   const userId = await getUserId();
-  const data = JSON.parse(jsonString);
+  let data: any;
+  try {
+    data = JSON.parse(jsonString);
+  } catch {
+    throw new Error("유효하지 않은 JSON 형식입니다.");
+  }
 
   const isExportFormat = Array.isArray(data.steps);
 
